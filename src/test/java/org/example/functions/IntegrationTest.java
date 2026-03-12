@@ -3,6 +3,7 @@ package org.example.functions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -10,53 +11,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("Интеграционные тесты - стратегия Bottom-Up")
+@DisplayName("Интеграционные тесты")
 class IntegrationTest {
     private static final double PI = 3.141592653589793;
     private static final double PI_2 = PI / 2.0;
-    private static final double E = 2.718281828459045;
-
-    private CosFunction createRealCos() {
-        SinFunction realSin = new SinFunction(1e-12);
-        return new CosFunction(realSin);
-    }
-
-    private TanFunction createRealTan() {
-        SinFunction realSin = new SinFunction(1e-12);
-        CosFunction realCos = new CosFunction(realSin);
-        return new TanFunction(realSin, realCos);
-    }
-
-    private LnFunction createRealLn() {
-        return new LnFunction(1e-12);
-    }
-
-    private SystemFunction createNegativeBranchSystemFunction() {
-        TanFunction realTan = createRealTan();
-        LnFunction mockLn = mock(LnFunction.class);
-        LogFunction mockLog5 = mock(LogFunction.class);
-        LogFunction mockLog3 = mock(LogFunction.class);
-        LogFunction mockLog10 = mock(LogFunction.class);
-        return new SystemFunction(realTan, mockLn, mockLog5, mockLog3, mockLog10);
-    }
-
-    private SystemFunction createPositiveBranchSystemFunction() {
-        TanFunction mockTan = mock(TanFunction.class);
-        LnFunction realLn = createRealLn();
-        LogFunction realLog5 = new LogFunction(realLn, 5);
-        LogFunction realLog3 = new LogFunction(realLn, 3);
-        LogFunction realLog10 = new LogFunction(realLn, 10);
-        return new SystemFunction(mockTan, realLn, realLog5, realLog3, realLog10);
-    }
-
-    private SystemFunction createFullSystemFunction() {
-        TanFunction realTan = createRealTan();
-        LnFunction realLn = createRealLn();
-        LogFunction realLog5 = new LogFunction(realLn, 5);
-        LogFunction realLog3 = new LogFunction(realLn, 3);
-        LogFunction realLog10 = new LogFunction(realLn, 10);
-        return new SystemFunction(realTan, realLn, realLog5, realLog3, realLog10);
-    }
 
     @ParameterizedTest(name = "cos({0}) ~ {1}")
     @CsvSource({
@@ -101,17 +59,11 @@ class IntegrationTest {
             "-0.7853981633974,  -1.0,                1e-4",
             "-0.5235987755983,  -0.192450089729875,  1e-4",
             "-2.3561944901923,   1.0,                1e-3",
+            "-1.0,              -3.777521747832757,  1e-3",
     })
     void negativeBranchReal(double x, double expected, double eps) {
         SystemFunction systemFunction = createNegativeBranchSystemFunction();
         assertEquals(expected, systemFunction.calculate(x), eps);
-    }
-
-    @Test
-    @DisplayName("f(-1) = tan^3(-1) ~ -3.77752")
-    void atMinusOne() {
-        SystemFunction systemFunction = createNegativeBranchSystemFunction();
-        assertEquals(-3.777521747832757, systemFunction.calculate(-1.0), 1e-3);
     }
 
     @Test
@@ -160,98 +112,95 @@ class IntegrationTest {
         assertEquals(expected, log10.calculate(x), eps);
     }
 
+    @ParameterizedTest(name = "f({0}) ~ {1}")
+    @CsvSource({
+            "10.0,               1410.966236358996,   0.01",
+            "2.718281828459045,  1.302257923773871,   1e-3",
+            "5.0,                47.623195322270583,  0.01",
+    })
+    void positiveBranchReal(double x, double expected, double eps) {
+        SystemFunction systemFunction = createPositiveBranchSystemFunction();
+        assertEquals(expected, systemFunction.calculate(x), eps);
+    }
+
     @Test
     @DisplayName("f(1) = NaN (деление на log10(1) = 0)")
-    void atOne() {
+    void positiveBranchRealAtOne() {
         SystemFunction systemFunction = createPositiveBranchSystemFunction();
         assertTrue(Double.isNaN(systemFunction.calculate(1.0)));
     }
 
-    @Test
-    @DisplayName("f(10) ~ 1410.966")
-    void atTen() {
-        SystemFunction systemFunction = createPositiveBranchSystemFunction();
-        assertEquals(1410.966236358996, systemFunction.calculate(10.0), 0.01);
-    }
-
-    @Test
-    @DisplayName("f(e) ~ 1.30226")
-    void atE() {
-        SystemFunction systemFunction = createPositiveBranchSystemFunction();
-        assertEquals(1.302257923773871, systemFunction.calculate(E), 1e-3);
-    }
-
-    @Test
-    @DisplayName("f(5) ~ 47.623")
-    void atFive() {
-        SystemFunction systemFunction = createPositiveBranchSystemFunction();
-        assertEquals(47.623195322270583, systemFunction.calculate(5.0), 0.01);
-    }
-
     @ParameterizedTest(name = "f({0}) ~ {1}")
     @CsvSource({
-            " 0.0,                0.0,                1e-6",
-            "-0.7853981633974,   -1.0,                1e-4",
-            "-0.5235987755983,   -0.192450089729875,  1e-4",
+            " 0.0,               0.0,                1e-6",
+            "-0.7853981633974,  -1.0,                1e-4",
+            "-0.5235987755983,  -0.192450089729875,  1e-4",
+            "-1.0,              -3.777521747832757,  1e-3",
+            "-2.0,               10.432252583955655,  1e-3",
     })
     void fullSystemNegative(double x, double expected, double eps) {
         SystemFunction systemFunction = createFullSystemFunction();
         assertEquals(expected, systemFunction.calculate(x), eps);
     }
 
-    @Test
-    @DisplayName("Полный тест: f(-1) ~ -3.77752")
-    void fullSystemAtMinusOne() {
+    @ParameterizedTest(name = "f({0}) ~ {1}")
+    @CsvSource({
+            "10.0,               1410.966236358996,   0.01",
+            "2.718281828459045,  1.302257923773871,   1e-3",
+            "0.5,                6.966075894512001,   0.01",
+            "2.0,               -0.082986438977865,   1e-3",
+    })
+    void fullSystemPositive(double x, double expected, double eps) {
         SystemFunction systemFunction = createFullSystemFunction();
-        assertEquals(-3.777521747832757, systemFunction.calculate(-1.0), 1e-3);
+        assertEquals(expected, systemFunction.calculate(x), eps);
     }
 
-    @Test
-    @DisplayName("Полный тест: f(-2) ~ 10.43225")
-    void fullSystemAtMinusTwo() {
+    @ParameterizedTest(name = "f({0}) = NaN")
+    @ValueSource(doubles = {-1.5707963267949, 1.0})
+    void fullSystemNaN(double x) {
         SystemFunction systemFunction = createFullSystemFunction();
-        assertEquals(10.432252583955655, systemFunction.calculate(-2.0), 1e-3);
+        assertTrue(Double.isNaN(systemFunction.calculate(x)));
     }
 
-    @Test
-    @DisplayName("Полный тест: f(-pi/2) = NaN")
-    void fullSystemAsymptote() {
-        SystemFunction systemFunction = createFullSystemFunction();
-        assertTrue(Double.isNaN(systemFunction.calculate(-PI_2)));
+    private CosFunction createRealCos() {
+        SinFunction realSin = new SinFunction(1e-12);
+        return new CosFunction(realSin);
     }
 
-    @Test
-    @DisplayName("Полный тест: f(1) = NaN")
-    void fullSystemAtOne() {
-        SystemFunction systemFunction = createFullSystemFunction();
-        assertTrue(Double.isNaN(systemFunction.calculate(1.0)));
+    private TanFunction createRealTan() {
+        SinFunction realSin = new SinFunction(1e-12);
+        CosFunction realCos = new CosFunction(realSin);
+        return new TanFunction(realSin, realCos);
     }
 
-    @Test
-    @DisplayName("Полный тест: f(10) ~ 1410.966")
-    void fullSystemAtTen() {
-        SystemFunction systemFunction = createFullSystemFunction();
-        assertEquals(1410.966236358996, systemFunction.calculate(10.0), 0.01);
+    private LnFunction createRealLn() {
+        return new LnFunction(1e-12);
     }
 
-    @Test
-    @DisplayName("Полный тест: f(e) ~ 1.302")
-    void fullSystemAtE() {
-        SystemFunction systemFunction = createFullSystemFunction();
-        assertEquals(1.302257923773871, systemFunction.calculate(E), 1e-3);
+    private SystemFunction createNegativeBranchSystemFunction() {
+        TanFunction realTan = createRealTan();
+        LnFunction mockLn = mock(LnFunction.class);
+        LogFunction mockLog5 = mock(LogFunction.class);
+        LogFunction mockLog3 = mock(LogFunction.class);
+        LogFunction mockLog10 = mock(LogFunction.class);
+        return new SystemFunction(realTan, mockLn, mockLog5, mockLog3, mockLog10);
     }
 
-    @Test
-    @DisplayName("Полный тест: f(0.5) ~ 6.966")
-    void fullSystemAtHalf() {
-        SystemFunction systemFunction = createFullSystemFunction();
-        assertEquals(6.966075894512001, systemFunction.calculate(0.5), 0.01);
+    private SystemFunction createPositiveBranchSystemFunction() {
+        TanFunction mockTan = mock(TanFunction.class);
+        LnFunction realLn = createRealLn();
+        LogFunction realLog5 = new LogFunction(realLn, 5);
+        LogFunction realLog3 = new LogFunction(realLn, 3);
+        LogFunction realLog10 = new LogFunction(realLn, 10);
+        return new SystemFunction(mockTan, realLn, realLog5, realLog3, realLog10);
     }
 
-    @Test
-    @DisplayName("Полный тест: f(2) ~ -0.083")
-    void fullSystemAtTwo() {
-        SystemFunction systemFunction = createFullSystemFunction();
-        assertEquals(-0.082986438977865, systemFunction.calculate(2.0), 1e-3);
+    private SystemFunction createFullSystemFunction() {
+        TanFunction realTan = createRealTan();
+        LnFunction realLn = createRealLn();
+        LogFunction realLog5 = new LogFunction(realLn, 5);
+        LogFunction realLog3 = new LogFunction(realLn, 3);
+        LogFunction realLog10 = new LogFunction(realLn, 10);
+        return new SystemFunction(realTan, realLn, realLog5, realLog3, realLog10);
     }
 }

@@ -11,12 +11,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("SystemFunction - юнит-тесты с заглушками")
+@DisplayName("SystemFunction")
 class SystemFunctionTest {
     private static final double PI = 3.141592653589793;
-    private static final double PI_4 = PI / 4.0;
     private static final double PI_2 = PI / 2.0;
-    private static final double PI_6 = PI / 6.0;
     private static final double E = 2.718281828459045;
     private static final double LN_10 = 2.302585092994046;
     private static final double LN_5 = 1.609437912434100;
@@ -26,6 +24,7 @@ class SystemFunctionTest {
     private static final double LOG5_E = 0.621334934559612;
     private static final double LOG3_E = 0.910239226626837;
     private static final double LOG10_E = 0.434294481903252;
+
     @Mock
     private TanFunction tanFunction;
     @Mock
@@ -40,22 +39,21 @@ class SystemFunctionTest {
 
     @BeforeEach
     void setUp() {
-        systemFunction = new SystemFunction(tanFunction, lnFunction,
-                log5Function, log3Function, log10Function);
+        systemFunction = new SystemFunction(tanFunction, lnFunction, log5Function, log3Function, log10Function);
     }
 
-    @Test
-    @DisplayName("f(0) = tan^3(0) = 0")
-    void atZero() {
-        when(tanFunction.calculate(0.0)).thenReturn(0.0);
-        assertEquals(0.0, systemFunction.calculate(0.0), 1e-10);
-    }
-
-    @Test
-    @DisplayName("f(-pi/4) = tan^3(-pi/4) = (-1)^3 = -1")
-    void atMinusPiOver4() {
-        when(tanFunction.calculate(-PI_4)).thenReturn(-1.0);
-        assertEquals(-1.0, systemFunction.calculate(-PI_4), 1e-10);
+    @ParameterizedTest(name = "f({0}) = tan^3({0}), tan = {1}")
+    @CsvSource({
+            "0.0,               0.0",
+            "-0.7853981633974,  -1.0",
+            "-0.5235987755983,  -0.577350269189626",
+            "-1.0,              -1.557407724654902",
+            "-2.0,               2.185039863261519",
+    })
+    void negativeBranch(double x, double tanVal) {
+        when(tanFunction.calculate(x)).thenReturn(tanVal);
+        double expected = tanVal * tanVal * tanVal;
+        assertEquals(expected, systemFunction.calculate(x), 1e-6);
     }
 
     @Test
@@ -63,18 +61,6 @@ class SystemFunctionTest {
     void atMinusPiOver2() {
         when(tanFunction.calculate(-PI_2)).thenReturn(Double.NaN);
         assertTrue(Double.isNaN(systemFunction.calculate(-PI_2)));
-    }
-
-    @ParameterizedTest(name = "f({0}) = tan^3({0}), tan = {1}")
-    @CsvSource({
-            "-0.5235987755983, -0.577350269189626",
-            "-1.0,             -1.557407724654902",
-            "-2.0,              2.185039863261519",
-    })
-    void interiorPoints(double x, double tanVal) {
-        when(tanFunction.calculate(x)).thenReturn(tanVal);
-        double expected = tanVal * tanVal * tanVal;
-        assertEquals(expected, systemFunction.calculate(x), 1e-6);
     }
 
     @Test

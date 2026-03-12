@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("LogFunction - юнит-тесты с заглушкой LnFunction")
+@DisplayName("LogFunction")
 class LogFunctionTest {
     private static final double LN_2 = 0.693147180559945;
     private static final double LN_3 = 1.098612288668110;
@@ -72,7 +72,7 @@ class LogFunctionTest {
     }
 
     @Test
-    @DisplayName("Невалидное основание -> IllegalArgumentException")
+    @DisplayName("Невалидное основание log -> IllegalArgumentException")
     void invalidBase() {
         assertThrows(IllegalArgumentException.class, () -> new LogFunction(lnFunction, 1.0));
         assertThrows(IllegalArgumentException.class, () -> new LogFunction(lnFunction, 0.0));
