@@ -1,14 +1,12 @@
 package org.example.functions;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class TanFunction {
 
     private final SinFunction sinFunction;
     private final CosFunction cosFunction;
-
-    public TanFunction(SinFunction sinFunction, CosFunction cosFunction) {
-        this.sinFunction = sinFunction;
-        this.cosFunction = cosFunction;
-    }
 
     public double calculate(double x) {
         double cosVal = cosFunction.calculate(x);

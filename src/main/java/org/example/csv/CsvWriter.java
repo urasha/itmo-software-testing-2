@@ -13,7 +13,7 @@ public class CsvWriter {
             pw.println("X,Result");
             for (double x = from; x <= to + step / 2; x += step) {
                 double result = function.applyAsDouble(x);
-                pw.printf("%.6f,%.10f%n", x, result);
+                pw.printf("%.6f;%.10f%n", x, result);
             }
         }
     }

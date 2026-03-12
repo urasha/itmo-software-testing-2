@@ -1,5 +1,8 @@
 package org.example.functions;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class SystemFunction {
 
     private final TanFunction tanFunction;
@@ -7,16 +10,6 @@ public class SystemFunction {
     private final LogFunction log5Function;
     private final LogFunction log3Function;
     private final LogFunction log10Function;
-
-    public SystemFunction(TanFunction tanFunction, LnFunction lnFunction,
-                          LogFunction log5Function, LogFunction log3Function,
-                          LogFunction log10Function) {
-        this.tanFunction = tanFunction;
-        this.lnFunction = lnFunction;
-        this.log5Function = log5Function;
-        this.log3Function = log3Function;
-        this.log10Function = log10Function;
-    }
 
     public double calculate(double x) {
         if (x <= 0) {

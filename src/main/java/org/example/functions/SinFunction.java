@@ -1,12 +1,11 @@
 package org.example.functions;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class SinFunction {
 
     private final double epsilon;
-
-    public SinFunction(double epsilon) {
-        this.epsilon = epsilon;
-    }
 
     public SinFunction() {
         this(1e-10);

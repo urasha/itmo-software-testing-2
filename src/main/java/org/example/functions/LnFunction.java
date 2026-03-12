@@ -1,12 +1,11 @@
 package org.example.functions;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class LnFunction {
 
     private final double epsilon;
-
-    public LnFunction(double epsilon) {
-        this.epsilon = epsilon;
-    }
 
     public LnFunction() {
         this(1e-10);

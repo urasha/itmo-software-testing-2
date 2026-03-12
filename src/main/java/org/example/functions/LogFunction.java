@@ -21,8 +21,4 @@ public class LogFunction {
         }
         return lnX / lnBase;
     }
-
-    public double getBase() {
-        return base;
-    }
 }
