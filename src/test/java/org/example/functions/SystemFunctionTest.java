@@ -17,8 +17,6 @@ class SystemFunctionTest {
     private static final double PI_2 = PI / 2.0;
     private static final double E = 2.718281828459045;
     private static final double LN_10 = 2.302585092994046;
-    private static final double LN_5 = 1.609437912434100;
-    private static final double LN_3 = 1.098612288668110;
     private static final double LOG5_10 = 1.430676558073393;
     private static final double LOG3_10 = 2.095903274289385;
     private static final double LOG5_E = 0.621334934559612;
@@ -47,6 +45,7 @@ class SystemFunctionTest {
             "0.0,               0.0",
             "-0.7853981633974,  -1.0",
             "-0.5235987755983,  -0.577350269189626",
+            "-2.3561944901923,   1.0",
             "-1.0,              -1.557407724654902",
             "-2.0,               2.185039863261519",
     })

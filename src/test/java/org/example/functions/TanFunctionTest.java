@@ -14,8 +14,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("TanFunction")
 class TanFunctionTest {
-    private static final double PI = 3.141592653589793;
-    private static final double PI_2 = PI / 2.0;
     @Mock
     private SinFunction sinFunction;
     @Mock
@@ -33,6 +31,8 @@ class TanFunctionTest {
             "0.7853981633974,    0.7071067811865,  0.7071067811865",
             "0.5235987755983,    0.5,              0.8660254037844",
             "1.0471975511966,    0.8660254037844,  0.5",
+            "2.3561944901923,    0.7071067811865, -0.7071067811865",
+            "3.9269908169872,   -0.7071067811865, -0.7071067811865",
             "-0.7853981633974,  -0.7071067811865,  0.7071067811865",
             "-0.5235987755983,  -0.5,              0.8660254037844",
     })
