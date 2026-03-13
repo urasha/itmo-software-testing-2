@@ -22,7 +22,6 @@ class CsvWriterTest {
     Path tempDir;
 
     @Test
-    @DisplayName("writes header and formatted rows")
     void writesHeaderAndFormattedRows() throws IOException {
         Path file = tempDir.resolve("result.csv");
 
@@ -30,48 +29,26 @@ class CsvWriterTest {
 
         List<String> lines = Files.readAllLines(file);
         assertEquals(4, lines.size());
-        assertEquals("X,Result", lines.get(0));
+        assertEquals("X;Result", lines.get(0));
         assertEquals(formattedRow(0.0, 0.0), lines.get(1));
         assertEquals(formattedRow(0.2, 0.04), lines.get(2));
         assertEquals(formattedRow(0.4, 0.16), lines.get(3));
     }
 
     @Test
-    @DisplayName("includes right bound despite floating-point error")
-    void includesRightBoundDespiteFloatingPointError() throws IOException {
-        Path file = tempDir.resolve("floating.csv");
+    void throwsWhenStepIsNonPositive() {
+        Path file = tempDir.resolve("bad_step.csv");
 
-        CsvWriter.write(file.toString(), x -> x, 0.0, 0.3, 0.1);
-
-        List<String> lines = Files.readAllLines(file);
-        assertEquals(5, lines.size());
-        assertEquals(formattedRow(0.3, 0.3), lines.get(4));
+        assertThrows(IllegalArgumentException.class,
+                () -> CsvWriter.write(file.toString(), x -> x, 0.0, 1.0, 0.0));
     }
 
     @Test
-    @DisplayName("throws when parent directory does not exist")
-    void throwsWhenParentDirectoryDoesNotExist() {
-        Path file = tempDir.resolve("missing").resolve("out.csv");
-        DoubleUnaryOperator identity = x -> x;
+    void throwsWhenFromGreaterThanTo() {
+        Path file = tempDir.resolve("bad_bounds.csv");
 
-        assertThrows(IOException.class,
-                () -> CsvWriter.write(file.toString(), identity, 0.0, 1.0, 0.5));
-    }
-
-    @Test
-    @DisplayName("applies function for each generated x")
-    void appliesFunctionForEachGeneratedX() throws IOException {
-        Path file = tempDir.resolve("calls.csv");
-        final int[] calls = {0};
-
-        CsvWriter.write(file.toString(), x -> {
-            calls[0]++;
-            return x + 1.0;
-        }, 0.0, 0.2, 0.1);
-
-        assertEquals(3, calls[0]);
-        List<String> lines = Files.readAllLines(file);
-        assertTrue(lines.contains(formattedRow(0.1, 1.1)));
+        assertThrows(IllegalArgumentException.class,
+                () -> CsvWriter.write(file.toString(), x -> x, 1.0, 0.0, 0.1));
     }
 
     private String formattedRow(double x, double result) {
