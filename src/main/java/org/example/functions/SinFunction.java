@@ -3,7 +3,7 @@ package org.example.functions;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class SinFunction {
+public class SinFunction implements ScalarFunction {
 
     private final double epsilon;
 
@@ -11,6 +11,7 @@ public class SinFunction {
         this(1e-10);
     }
 
+    @Override
     public double calculate(double x) {
         x = reduceArgument(x);
 

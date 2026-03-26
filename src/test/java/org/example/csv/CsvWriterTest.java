@@ -36,6 +36,19 @@ class CsvWriterTest {
     }
 
     @Test
+    void writesCustomPoints() throws IOException {
+        Path file = tempDir.resolve("points.csv");
+
+        CsvWriter.writePoints(file.toString(), x -> x + 1.0, new double[]{0.0, 1.5});
+
+        List<String> lines = Files.readAllLines(file);
+        assertEquals(3, lines.size());
+        assertEquals("X;Result", lines.get(0));
+        assertEquals(formattedRow(0.0, 1.0), lines.get(1));
+        assertEquals(formattedRow(1.5, 2.5), lines.get(2));
+    }
+
+    @Test
     void throwsWhenStepIsNonPositive() {
         Path file = tempDir.resolve("bad_step.csv");
 

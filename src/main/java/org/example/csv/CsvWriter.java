@@ -24,4 +24,19 @@ public class CsvWriter {
             }
         }
     }
+
+    public static void writePoints(String filePath, DoubleUnaryOperator function,
+                                   double[] points) throws IOException {
+        if (points == null) {
+            throw new IllegalArgumentException("points must not be null");
+        }
+
+        try (PrintWriter pw = new PrintWriter(new FileWriter(filePath))) {
+            pw.println("X;Result");
+            for (double x : points) {
+                double result = function.applyAsDouble(x);
+                pw.printf("%.6f;%.10f%n", x, result);
+            }
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package org.example.functions;
 
+import org.example.csv.CsvStubDataWriter;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -12,6 +13,11 @@ class SinFunctionTest {
     private static final double PI = 3.141592653589793;
     private static final double TWO_PI = 2 * PI;
     private final SinFunction sinFunction = new SinFunction(1e-12);
+
+    @BeforeAll
+    static void refreshStubFiles() throws Exception {
+        CsvStubDataWriter.writeDefaultStubFiles();
+    }
 
     @ParameterizedTest(name = "sin({0}) ~ {1}")
     @CsvSource({
@@ -51,5 +57,4 @@ class SinFunctionTest {
         double shifted = sinFunction.calculate(x + TWO_PI);
         assertEquals(base, shifted, 1e-6);
     }
-
 }

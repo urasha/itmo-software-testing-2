@@ -1,11 +1,11 @@
 package org.example.functions;
 
-public class LogFunction {
+public class LogFunction implements ScalarFunction {
 
-    private final LnFunction lnFunction;
+    private final ScalarFunction lnFunction;
     private final double base;
 
-    public LogFunction(LnFunction lnFunction, double base) {
+    public LogFunction(ScalarFunction lnFunction, double base) {
         if (base <= 0 || base == 1) {
             throw new IllegalArgumentException("Logarithm base must be positive and not equal to 1");
         }
@@ -13,6 +13,7 @@ public class LogFunction {
         this.base = base;
     }
 
+    @Override
     public double calculate(double x) {
         double lnX = lnFunction.calculate(x);
         double lnBase = lnFunction.calculate(base);
