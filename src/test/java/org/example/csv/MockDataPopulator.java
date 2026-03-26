@@ -3,7 +3,6 @@ package org.example.csv;
 import org.example.functions.LnFunction;
 import org.example.functions.LogFunction;
 import org.example.functions.TanFunction;
-import org.mockito.AdditionalMatchers;
 import org.mockito.Mockito;
 
 import java.io.BufferedReader;
@@ -12,6 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
 import java.util.function.BiConsumer;
+
+import static org.mockito.AdditionalMatchers.*;
 
 public class MockDataPopulator {
     private static final double MATCH_PRECISION = 1e-4;
@@ -24,7 +25,7 @@ public class MockDataPopulator {
             throw new IllegalArgumentException("No CSV reference value for TanFunction x=" + invocation.getArgument(0));
         }).when(mock).calculate(Mockito.anyDouble());
 
-        processCsv(csvPath, (x, y) -> Mockito.doReturn(y).when(mock).calculate(AdditionalMatchers.eq(x, MATCH_PRECISION)));
+        processCsv(csvPath, (x, y) -> Mockito.doReturn(y).when(mock).calculate(eq(x, MATCH_PRECISION)));
         return mock;
     }
 
@@ -34,7 +35,7 @@ public class MockDataPopulator {
             throw new IllegalArgumentException("No CSV reference value for LnFunction x=" + invocation.getArgument(0));
         }).when(mock).calculate(Mockito.anyDouble());
 
-        processCsv(csvPath, (x, y) -> Mockito.doReturn(y).when(mock).calculate(AdditionalMatchers.eq(x, MATCH_PRECISION)));
+        processCsv(csvPath, (x, y) -> Mockito.doReturn(y).when(mock).calculate(eq(x, MATCH_PRECISION)));
         return mock;
     }
 
@@ -44,7 +45,7 @@ public class MockDataPopulator {
             throw new IllegalArgumentException("No CSV reference value for LogFunction x=" + invocation.getArgument(0));
         }).when(mock).calculate(Mockito.anyDouble());
 
-        processCsv(csvPath, (x, y) -> Mockito.doReturn(y).when(mock).calculate(AdditionalMatchers.eq(x, MATCH_PRECISION)));
+        processCsv(csvPath, (x, y) -> Mockito.doReturn(y).when(mock).calculate(eq(x, MATCH_PRECISION)));
         return mock;
     }
 
