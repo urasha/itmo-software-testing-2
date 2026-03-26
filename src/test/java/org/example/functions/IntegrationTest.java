@@ -1,7 +1,7 @@
 package org.example.functions;
 
-import org.example.csv.CsvLookupStub;
 import org.example.csv.CsvStubDataWriter;
+import org.example.csv.MockDataPopulator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ class IntegrationTest {
 
     @BeforeAll
     static void generateStubData() throws Exception {
-        CsvStubDataWriter.writeDefaultStubFiles();
+            CsvStubDataWriter.writeDefaultStubFiles();
     }
 
     @Test
@@ -84,16 +84,16 @@ class IntegrationTest {
 
     private static ModuleBundle createModuleBundle() throws Exception {
         return new ModuleBundle(
-                loadStub("tan.csv"),
-                loadStub("ln.csv"),
-                loadStub("log5.csv"),
-                loadStub("log3.csv"),
-                loadStub("log10.csv")
+                loadMock(TanFunction.class, "tan.csv"),
+                loadMock(LnFunction.class, "ln.csv"),
+                loadMock(LogFunction.class, "log5.csv"),
+                loadMock(LogFunction.class, "log3.csv"),
+                loadMock(LogFunction.class, "log10.csv")
         );
     }
 
-    private static ScalarFunction loadStub(String fileName) throws Exception {
-        return new CsvLookupStub(Path.of("src", "test", "resources", fileName));
+    private static <T extends ScalarFunction> T loadMock(Class<T> clazz, String fileName) throws Exception {
+        return MockDataPopulator.getMock(clazz, Path.of("src", "test", "resources", fileName));
     }
 
     private static TanFunction createRealTan() {
