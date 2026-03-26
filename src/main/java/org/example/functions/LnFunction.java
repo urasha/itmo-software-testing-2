@@ -3,7 +3,7 @@ package org.example.functions;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class LnFunction implements ScalarFunction {
+public class LnFunction {
 
     private final double epsilon;
 
@@ -11,7 +11,6 @@ public class LnFunction implements ScalarFunction {
         this(1e-10);
     }
 
-    @Override
     public double calculate(double x) {
         if (x <= 0) {
             return Double.NaN;

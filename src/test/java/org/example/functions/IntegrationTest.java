@@ -13,25 +13,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Top-Down Integration")
 class IntegrationTest {
-    private static final double tolerance = 1e-3;
-    private static final double[] negativePoints = {-0.1, -0.2, -0.5, -1.0, -2.0};
-    private static final double[] positivePoints = {0.1, 0.2, 0.5, 2.0, 3.0, 10.0};
+    private static final double TOLERANCE = 1e-3;
+    private static final double[] NEGATIVE_POINTS = {-0.1, -0.2, -0.5, -1.0, -2.0};
+    private static final double[] POSITIVE_POINTS = {0.1, 0.2, 0.5, 2.0, 3.0, 10.0};
 
     @BeforeAll
     static void generateStubData() throws Exception {
-            CsvStubDataWriter.writeDefaultStubFiles();
+        CsvStubDataWriter.writeDefaultStubFiles();
     }
 
     @Test
     void trigStage0AllStubs() throws Exception {
-        ModuleBundle m = createModuleBundle();
+        FunctionMocksBench m = createFunctionMocksBench();
         SystemFunction system = new SystemFunction(m.tanStub, m.lnStub, m.log5Stub, m.log3Stub, m.log10Stub);
         assertNegativeBranchMatches(system, m.tanStub);
     }
 
     @Test
     void trigStage1RealTanRestStubs() throws Exception {
-        ModuleBundle m = createModuleBundle();
+        FunctionMocksBench m = createFunctionMocksBench();
         TanFunction tanReal = createRealTan();
         SystemFunction system = new SystemFunction(tanReal, m.lnStub, m.log5Stub, m.log3Stub, m.log10Stub);
         assertNegativeBranchMatches(system, tanReal);
@@ -39,14 +39,14 @@ class IntegrationTest {
 
     @Test
     void logStage0AllStubs() throws Exception {
-        ModuleBundle m = createModuleBundle();
+        FunctionMocksBench m = createFunctionMocksBench();
         SystemFunction system = new SystemFunction(m.tanStub, m.lnStub, m.log5Stub, m.log3Stub, m.log10Stub);
         assertPositiveBranchMatches(system, m.lnStub, m.log5Stub, m.log3Stub, m.log10Stub);
     }
 
     @Test
     void logStage1RealLnRestStubs() throws Exception {
-        ModuleBundle m = createModuleBundle();
+        FunctionMocksBench m = createFunctionMocksBench();
         LnFunction lnReal = createRealLn();
         SystemFunction system = new SystemFunction(m.tanStub, lnReal, m.log5Stub, m.log3Stub, m.log10Stub);
         assertPositiveBranchMatches(system, lnReal, m.log5Stub, m.log3Stub, m.log10Stub);
@@ -54,7 +54,7 @@ class IntegrationTest {
 
     @Test
     void logStage2RealLnLog5RestStubs() throws Exception {
-        ModuleBundle m = createModuleBundle();
+        FunctionMocksBench m = createFunctionMocksBench();
         LnFunction lnReal = createRealLn();
         LogFunction log5Real = new LogFunction(lnReal, 5);
         SystemFunction system = new SystemFunction(m.tanStub, lnReal, log5Real, m.log3Stub, m.log10Stub);
@@ -63,7 +63,7 @@ class IntegrationTest {
 
     @Test
     void logStage3RealLnLog5Log3RestStubs() throws Exception {
-        ModuleBundle m = createModuleBundle();
+        FunctionMocksBench m = createFunctionMocksBench();
         LnFunction lnReal = createRealLn();
         LogFunction log5Real = new LogFunction(lnReal, 5);
         LogFunction log3Real = new LogFunction(lnReal, 3);
@@ -73,7 +73,7 @@ class IntegrationTest {
 
     @Test
     void logStage4RealLogsTrigStubs() throws Exception {
-        ModuleBundle m = createModuleBundle();
+        FunctionMocksBench m = createFunctionMocksBench();
         LnFunction lnReal = createRealLn();
         LogFunction log5Real = new LogFunction(lnReal, 5);
         LogFunction log3Real = new LogFunction(lnReal, 3);
@@ -82,18 +82,14 @@ class IntegrationTest {
         assertPositiveBranchMatches(system, lnReal, log5Real, log3Real, log10Real);
     }
 
-    private static ModuleBundle createModuleBundle() throws Exception {
-        return new ModuleBundle(
-                loadMock(TanFunction.class, "tan.csv"),
-                loadMock(LnFunction.class, "ln.csv"),
-                loadMock(LogFunction.class, "log5.csv"),
-                loadMock(LogFunction.class, "log3.csv"),
-                loadMock(LogFunction.class, "log10.csv")
+    private static FunctionMocksBench createFunctionMocksBench() throws Exception {
+        return new FunctionMocksBench(
+                MockDataPopulator.getTanMock(Path.of("src", "test", "resources", "tan.csv")),
+                MockDataPopulator.getLnMock(Path.of("src", "test", "resources", "ln.csv")),
+                MockDataPopulator.getLogMock(Path.of("src", "test", "resources", "log5.csv")),
+                MockDataPopulator.getLogMock(Path.of("src", "test", "resources", "log3.csv")),
+                MockDataPopulator.getLogMock(Path.of("src", "test", "resources", "log10.csv"))
         );
-    }
-
-    private static <T extends ScalarFunction> T loadMock(Class<T> clazz, String fileName) throws Exception {
-        return MockDataPopulator.getMock(clazz, Path.of("src", "test", "resources", fileName));
     }
 
     private static TanFunction createRealTan() {
@@ -106,8 +102,8 @@ class IntegrationTest {
         return new LnFunction(1e-12);
     }
 
-    private static void assertNegativeBranchMatches(SystemFunction system, ScalarFunction tanFn) {
-        for (double x : negativePoints) {
+    private static void assertNegativeBranchMatches(SystemFunction system, TanFunction tanFn) {
+        for (double x : NEGATIVE_POINTS) {
             double tanVal = tanFn.calculate(x);
             double expected = Double.isNaN(tanVal) ? Double.NaN : tanVal * tanVal * tanVal;
             double actual = system.calculate(x);
@@ -115,27 +111,18 @@ class IntegrationTest {
         }
     }
 
-    private static void assertPositiveBranchMatches(
-            SystemFunction system,
-            ScalarFunction ln,
-            ScalarFunction log5,
-            ScalarFunction log3,
-            ScalarFunction log10
-    ) {
-        for (double x : positivePoints) {
+    private static void assertPositiveBranchMatches(SystemFunction system,
+                                                    LnFunction ln, LogFunction log5,
+                                                    LogFunction log3, LogFunction log10) {
+        for (double x : POSITIVE_POINTS) {
             double expected = expectedPositiveValue(ln, log5, log3, log10, x);
             double actual = system.calculate(x);
             assertClose(expected, actual);
         }
     }
 
-    private static double expectedPositiveValue(
-            ScalarFunction ln,
-            ScalarFunction log5,
-            ScalarFunction log3,
-            ScalarFunction log10,
-            double x
-    ) {
+    private static double expectedPositiveValue(LnFunction ln, LogFunction log5,
+                                                LogFunction log3, LogFunction log10, double x) {
         double lnVal = ln.calculate(x);
         double log5Val = log5.calculate(x);
         double log3Val = log3.calculate(x);
@@ -160,16 +147,11 @@ class IntegrationTest {
         if (Double.isNaN(expected)) {
             assertTrue(Double.isNaN(actual));
         } else {
-            assertEquals(expected, actual, tolerance);
+            assertEquals(expected, actual, TOLERANCE);
         }
     }
 
-    private record ModuleBundle(
-            ScalarFunction tanStub,
-            ScalarFunction lnStub,
-            ScalarFunction log5Stub,
-            ScalarFunction log3Stub,
-            ScalarFunction log10Stub
-    ) {
+    private record FunctionMocksBench(TanFunction tanStub, LnFunction lnStub,
+                                      LogFunction log5Stub, LogFunction log3Stub, LogFunction log10Stub) {
     }
 }

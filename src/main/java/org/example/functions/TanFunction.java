@@ -3,12 +3,11 @@ package org.example.functions;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class TanFunction implements ScalarFunction {
+public class TanFunction {
 
-    private final ScalarFunction sinFunction;
-    private final ScalarFunction cosFunction;
+    private final SinFunction sinFunction;
+    private final CosFunction cosFunction;
 
-    @Override
     public double calculate(double x) {
         double cosVal = cosFunction.calculate(x);
         if (Math.abs(cosVal) < 1e-10) {

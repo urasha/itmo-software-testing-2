@@ -11,8 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public final class CsvStubDataWriter {
-    private static final double[] negativePoints = {-0.1, -0.2, -0.5, -1.0, -2.0};
-    private static final double[] positivePoints = {0.1, 0.2, 0.5, 2.0, 3.0, 10.0};
+    private static final double[] NEGATIVE_POINTS = {-0.1, -0.2, -0.5, -1.0, -2.0};
+    private static final double[] POSITIVE_POINTS = {0.1, 0.2, 0.5, 2.0, 3.0, 10.0};
 
     private CsvStubDataWriter() {
     }
@@ -30,10 +30,10 @@ public final class CsvStubDataWriter {
         LogFunction log3 = new LogFunction(ln, 3);
         LogFunction log10 = new LogFunction(ln, 10);
 
-        CsvWriter.writePoints(outputDir.resolve("tan.csv").toString(), tan::calculate, negativePoints);
-        CsvWriter.writePoints(outputDir.resolve("ln.csv").toString(), ln::calculate, positivePoints);
-        CsvWriter.writePoints(outputDir.resolve("log5.csv").toString(), log5::calculate, positivePoints);
-        CsvWriter.writePoints(outputDir.resolve("log3.csv").toString(), log3::calculate, positivePoints);
-        CsvWriter.writePoints(outputDir.resolve("log10.csv").toString(), log10::calculate, positivePoints);
+        CsvWriter.writePoints(outputDir.resolve("tan.csv").toString(), tan::calculate, NEGATIVE_POINTS);
+        CsvWriter.writePoints(outputDir.resolve("ln.csv").toString(), ln::calculate, POSITIVE_POINTS);
+        CsvWriter.writePoints(outputDir.resolve("log5.csv").toString(), log5::calculate, POSITIVE_POINTS);
+        CsvWriter.writePoints(outputDir.resolve("log3.csv").toString(), log3::calculate, POSITIVE_POINTS);
+        CsvWriter.writePoints(outputDir.resolve("log10.csv").toString(), log10::calculate, POSITIVE_POINTS);
     }
 }

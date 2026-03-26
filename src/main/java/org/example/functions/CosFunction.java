@@ -3,11 +3,10 @@ package org.example.functions;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class CosFunction implements ScalarFunction {
+public class CosFunction {
 
-    private final ScalarFunction sinFunction;
+    private final SinFunction sinFunction;
 
-    @Override
     public double calculate(double x) {
         return sinFunction.calculate(Math.PI / 2 - x);
     }

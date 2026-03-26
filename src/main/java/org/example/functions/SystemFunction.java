@@ -3,15 +3,14 @@ package org.example.functions;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class SystemFunction implements ScalarFunction {
+public class SystemFunction {
 
-    private final ScalarFunction tanFunction;
-    private final ScalarFunction lnFunction;
-    private final ScalarFunction log5Function;
-    private final ScalarFunction log3Function;
-    private final ScalarFunction log10Function;
+    private final TanFunction tanFunction;
+    private final LnFunction lnFunction;
+    private final LogFunction log5Function;
+    private final LogFunction log3Function;
+    private final LogFunction log10Function;
 
-    @Override
     public double calculate(double x) {
         if (x <= 0) {
             return calculateNegativeBranch(x);
